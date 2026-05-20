@@ -5,6 +5,7 @@ const TARGET_COLORS = [
 
 let startDate = null;
 let targets = [];
+let history = [];
 let currentYear, currentMonth;
 
 const startDateInput = document.getElementById('start-date');
@@ -20,9 +21,11 @@ const tooltip = document.getElementById('tooltip');
 const sidebar = document.querySelector('.sidebar');
 const sidebarToggle = document.getElementById('sidebar-toggle');
 const clearBtn = document.getElementById('clear-btn');
+const historyList = document.getElementById('history-list');
 
 function init() {
   loadFromStorage();
+  loadHistory();
   loadFromURL();
 
   if (startDate) {
@@ -36,6 +39,7 @@ function init() {
   updateDaysPassed();
   renderTargetList();
   renderCalendar();
+  renderHistory();
 
   startDateInput.addEventListener('change', onStartDateChange);
   addTargetBtn.addEventListener('click', onAddTarget);
@@ -60,6 +64,78 @@ function clearAll() {
   renderCalendar();
 }
 
+// History
+function saveHistory() {
+  if (!startDate || targets.length === 0) return;
+  const entry = {
+    startDate: formatDateToInput(startDate),
+    targets: [...targets],
+    savedAt: new Date().toISOString()
+  };
+  // avoid duplicate: same startDate + same targets
+  const key = entry.startDate + '|' + entry.targets.join(',');
+  history = history.filter(h => (h.startDate + '|' + h.targets.join(',')) !== key);
+  history.unshift(entry);
+  if (history.length > 20) history.pop();
+  localStorage.setItem('day-counter-history', JSON.stringify(history));
+  renderHistory();
+}
+
+function loadHistory() {
+  const raw = localStorage.getItem('day-counter-history');
+  if (!raw) return;
+  try {
+    const data = JSON.parse(raw);
+    if (Array.isArray(data)) history = data;
+  } catch (e) {}
+}
+
+function applyHistory(index) {
+  const entry = history[index];
+  if (!entry) return;
+  startDate = parseInputDate(entry.startDate);
+  targets = [...entry.targets];
+  startDateInput.value = entry.startDate;
+  saveToStorage();
+  updateDaysPassed();
+  renderTargetList();
+  renderCalendar();
+}
+
+function removeHistory(index) {
+  history.splice(index, 1);
+  localStorage.setItem('day-counter-history', JSON.stringify(history));
+  renderHistory();
+}
+
+function renderHistory() {
+  historyList.innerHTML = '';
+  if (history.length === 0) {
+    const empty = document.createElement('li');
+    empty.className = 'history-empty';
+    empty.textContent = '尚無紀錄';
+    historyList.appendChild(empty);
+    return;
+  }
+  history.forEach((entry, i) => {
+    const li = document.createElement('li');
+    li.className = 'history-item';
+    li.innerHTML = `
+      <span class="history-item-info">
+        <span class="history-item-date">${entry.startDate}</span>
+        <span class="history-item-targets">目標：${entry.targets.join(', ')} 天</span>
+      </span>
+      <button class="delete-btn" data-index="${i}">&times;</button>
+    `;
+    li.querySelector('.history-item-info').addEventListener('click', () => applyHistory(i));
+    li.querySelector('.delete-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      removeHistory(i);
+    });
+    historyList.appendChild(li);
+  });
+}
+
 function onStartDateChange() {
   const val = startDateInput.value;
   if (val) {
@@ -79,6 +155,7 @@ function onAddTarget() {
   targets.push(val);
   targetDaysInput.value = '';
   saveToStorage();
+  saveHistory();
   renderTargetList();
   renderCalendar();
 }

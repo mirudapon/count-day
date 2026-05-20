@@ -201,6 +201,79 @@ h2 {
   color: #e63946;
 }
 
+.sidebar-divider {
+  border: none;
+  border-top: 1px solid #eee;
+  margin: 1rem 0 0.8rem;
+}
+
+.sidebar-content h3 {
+  font-size: 0.95rem;
+  color: #1a1a2e;
+  margin-bottom: 0.5rem;
+}
+
+.history-list {
+  list-style: none;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.6rem;
+  margin-bottom: 4px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-size: 0.85rem;
+}
+
+.history-item:hover {
+  background: #f0f2f5;
+}
+
+.history-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.history-item-date {
+  font-weight: 600;
+  display: block;
+}
+
+.history-item-targets {
+  color: #888;
+  font-size: 0.78rem;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-item .delete-btn {
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0 0.2rem;
+  flex-shrink: 0;
+  transition: color 0.2s;
+}
+
+.history-item .delete-btn:hover {
+  color: #e63946;
+}
+
+.history-empty {
+  color: #bbb;
+  font-size: 0.82rem;
+  text-align: center;
+  padding: 0.5rem 0;
+}
+
 .clear-btn {
   width: 100%;
   margin-top: 1.2rem;
