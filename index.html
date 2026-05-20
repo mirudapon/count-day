@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>天數計算器</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="layout">
+    <main class="main">
+      <h1>天數計算器</h1>
+
+      <section class="start-section">
+        <label for="start-date">起始日期</label>
+        <input type="date" id="start-date">
+        <div class="days-passed" id="days-passed"></div>
+      </section>
+
+      <section class="calendar-section">
+        <div class="calendar-nav">
+          <button id="prev-month">&lt;</button>
+          <span id="calendar-title"></span>
+          <button id="next-month">&gt;</button>
+        </div>
+        <div class="calendar-grid">
+          <div class="calendar-header">日</div>
+          <div class="calendar-header">一</div>
+          <div class="calendar-header">二</div>
+          <div class="calendar-header">三</div>
+          <div class="calendar-header">四</div>
+          <div class="calendar-header">五</div>
+          <div class="calendar-header">六</div>
+        </div>
+        <div class="calendar-body" id="calendar-body"></div>
+        <div class="tooltip" id="tooltip"></div>
+      </section>
+    </main>
+
+    <aside class="sidebar">
+      <button class="sidebar-toggle" id="sidebar-toggle">目標</button>
+      <div class="sidebar-content" id="sidebar-content">
+        <h2>目標天數</h2>
+        <div class="target-input-row">
+          <input type="number" id="target-days" min="1" placeholder="天數">
+          <button id="add-target-btn">新增</button>
+        </div>
+        <ul class="target-list" id="target-list"></ul>
+      </div>
+    </aside>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
