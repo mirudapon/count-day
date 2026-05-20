@@ -19,6 +19,7 @@ const nextMonthBtn = document.getElementById('next-month');
 const tooltip = document.getElementById('tooltip');
 const sidebar = document.querySelector('.sidebar');
 const sidebarToggle = document.getElementById('sidebar-toggle');
+const clearBtn = document.getElementById('clear-btn');
 
 function init() {
   loadFromStorage();
@@ -46,6 +47,17 @@ function init() {
   sidebarToggle.addEventListener('click', () => {
     sidebar.classList.toggle('open');
   });
+  clearBtn.addEventListener('click', clearAll);
+}
+
+function clearAll() {
+  startDate = null;
+  targets = [];
+  startDateInput.value = '';
+  localStorage.removeItem('day-counter');
+  updateDaysPassed();
+  renderTargetList();
+  renderCalendar();
 }
 
 function onStartDateChange() {

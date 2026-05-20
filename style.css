@@ -201,6 +201,24 @@ h2 {
   color: #e63946;
 }
 
+.clear-btn {
+  width: 100%;
+  margin-top: 1.2rem;
+  padding: 0.6rem;
+  background: none;
+  border: 1px solid #e63946;
+  color: #e63946;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.clear-btn:hover {
+  background: #e63946;
+  color: #fff;
+}
+
 /* Calendar Section */
 .calendar-section {
   background: #fff;
