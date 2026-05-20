@@ -37,19 +37,22 @@
       </section>
     </main>
 
-    <aside class="sidebar">
+    <aside class="sidebar sidebar-right">
+      <div class="sidebar-tabs">
+        <button class="sidebar-tab active" id="tab-target">目標</button>
+        <button class="sidebar-tab" id="tab-history">紀錄</button>
+      </div>
       <button class="sidebar-toggle" id="sidebar-toggle">目標</button>
-      <div class="sidebar-content" id="sidebar-content">
-        <h2>目標天數</h2>
+      <div class="sidebar-panel" id="panel-target">
         <div class="target-input-row">
           <input type="number" id="target-days" min="1" placeholder="天數">
           <button id="add-target-btn">新增</button>
         </div>
         <ul class="target-list" id="target-list"></ul>
-        <hr class="sidebar-divider">
-        <h3>歷史紀錄</h3>
-        <ul class="history-list" id="history-list"></ul>
         <button class="clear-btn" id="clear-btn">清除所有資料</button>
+      </div>
+      <div class="sidebar-panel hidden" id="panel-history">
+        <ul class="history-list" id="history-list"></ul>
       </div>
     </aside>
   </div>

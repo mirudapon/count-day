@@ -18,10 +18,14 @@ const calendarTitle = document.getElementById('calendar-title');
 const prevMonthBtn = document.getElementById('prev-month');
 const nextMonthBtn = document.getElementById('next-month');
 const tooltip = document.getElementById('tooltip');
-const sidebar = document.querySelector('.sidebar');
+const sidebar = document.querySelector('.sidebar-right');
 const sidebarToggle = document.getElementById('sidebar-toggle');
 const clearBtn = document.getElementById('clear-btn');
 const historyList = document.getElementById('history-list');
+const tabTarget = document.getElementById('tab-target');
+const tabHistory = document.getElementById('tab-history');
+const panelTarget = document.getElementById('panel-target');
+const panelHistory = document.getElementById('panel-history');
 
 function init() {
   loadFromStorage();
@@ -51,7 +55,23 @@ function init() {
   sidebarToggle.addEventListener('click', () => {
     sidebar.classList.toggle('open');
   });
+  tabTarget.addEventListener('click', () => switchTab('target'));
+  tabHistory.addEventListener('click', () => switchTab('history'));
   clearBtn.addEventListener('click', clearAll);
+}
+
+function switchTab(tab) {
+  if (tab === 'target') {
+    tabTarget.classList.add('active');
+    tabHistory.classList.remove('active');
+    panelTarget.classList.remove('hidden');
+    panelHistory.classList.add('hidden');
+  } else {
+    tabHistory.classList.add('active');
+    tabTarget.classList.remove('active');
+    panelHistory.classList.remove('hidden');
+    panelTarget.classList.add('hidden');
+  }
 }
 
 function clearAll() {
@@ -64,18 +84,12 @@ function clearAll() {
   renderCalendar();
 }
 
-// History
+// History — records start dates only
 function saveHistory() {
-  if (!startDate || targets.length === 0) return;
-  const entry = {
-    startDate: formatDateToInput(startDate),
-    targets: [...targets],
-    savedAt: new Date().toISOString()
-  };
-  // avoid duplicate: same startDate + same targets
-  const key = entry.startDate + '|' + entry.targets.join(',');
-  history = history.filter(h => (h.startDate + '|' + h.targets.join(',')) !== key);
-  history.unshift(entry);
+  if (!startDate) return;
+  const dateStr = formatDateToInput(startDate);
+  history = history.filter(h => h !== dateStr);
+  history.unshift(dateStr);
   if (history.length > 20) history.pop();
   setCookie('day-counter-history', JSON.stringify(history), COOKIE_DAYS);
   renderHistory();
@@ -91,11 +105,10 @@ function loadHistory() {
 }
 
 function applyHistory(index) {
-  const entry = history[index];
-  if (!entry) return;
-  startDate = parseInputDate(entry.startDate);
-  targets = [...entry.targets];
-  startDateInput.value = entry.startDate;
+  const dateStr = history[index];
+  if (!dateStr) return;
+  startDate = parseInputDate(dateStr);
+  startDateInput.value = dateStr;
   saveToStorage();
   updateDaysPassed();
   renderTargetList();
@@ -117,13 +130,12 @@ function renderHistory() {
     historyList.appendChild(empty);
     return;
   }
-  history.forEach((entry, i) => {
+  history.forEach((dateStr, i) => {
     const li = document.createElement('li');
     li.className = 'history-item';
     li.innerHTML = `
       <span class="history-item-info">
-        <span class="history-item-date">${entry.startDate}</span>
-        <span class="history-item-targets">目標：${entry.targets.join(', ')} 天</span>
+        <span class="history-item-date">${dateStr}</span>
       </span>
       <button class="delete-btn" data-index="${i}">&times;</button>
     `;
@@ -140,6 +152,7 @@ function onStartDateChange() {
   const val = startDateInput.value;
   if (val) {
     startDate = parseInputDate(val);
+    saveHistory();
   } else {
     startDate = null;
   }
@@ -155,7 +168,6 @@ function onAddTarget() {
   targets.push(val);
   targetDaysInput.value = '';
   saveToStorage();
-  saveHistory();
   renderTargetList();
   renderCalendar();
 }
