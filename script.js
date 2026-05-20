@@ -58,7 +58,7 @@ function clearAll() {
   startDate = null;
   targets = [];
   startDateInput.value = '';
-  localStorage.removeItem('day-counter');
+  deleteCookie('day-counter');
   updateDaysPassed();
   renderTargetList();
   renderCalendar();
@@ -77,12 +77,12 @@ function saveHistory() {
   history = history.filter(h => (h.startDate + '|' + h.targets.join(',')) !== key);
   history.unshift(entry);
   if (history.length > 20) history.pop();
-  localStorage.setItem('day-counter-history', JSON.stringify(history));
+  setCookie('day-counter-history', JSON.stringify(history), COOKIE_DAYS);
   renderHistory();
 }
 
 function loadHistory() {
-  const raw = localStorage.getItem('day-counter-history');
+  const raw = getCookie('day-counter-history');
   if (!raw) return;
   try {
     const data = JSON.parse(raw);
@@ -104,7 +104,7 @@ function applyHistory(index) {
 
 function removeHistory(index) {
   history.splice(index, 1);
-  localStorage.setItem('day-counter-history', JSON.stringify(history));
+  setCookie('day-counter-history', JSON.stringify(history), COOKIE_DAYS);
   renderHistory();
 }
 
@@ -350,17 +350,33 @@ function parseInputDate(str) {
   return new Date(y, m - 1, d);
 }
 
-// LocalStorage
+// Cookie helpers
+const COOKIE_DAYS = 30;
+
+function setCookie(name, value, days) {
+  const expires = new Date(Date.now() + days * 86400000).toUTCString();
+  document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)};expires=${expires};path=/;SameSite=Lax`;
+}
+
+function getCookie(name) {
+  const match = document.cookie.split('; ').find(c => c.startsWith(encodeURIComponent(name) + '='));
+  return match ? decodeURIComponent(match.split('=').slice(1).join('=')) : null;
+}
+
+function deleteCookie(name) {
+  document.cookie = `${encodeURIComponent(name)}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;SameSite=Lax`;
+}
+
 function saveToStorage() {
   const data = {
     startDate: startDate ? formatDateToInput(startDate) : null,
     targets: targets
   };
-  localStorage.setItem('day-counter', JSON.stringify(data));
+  setCookie('day-counter', JSON.stringify(data), COOKIE_DAYS);
 }
 
 function loadFromStorage() {
-  const raw = localStorage.getItem('day-counter');
+  const raw = getCookie('day-counter');
   if (!raw) return;
   try {
     const data = JSON.parse(raw);
